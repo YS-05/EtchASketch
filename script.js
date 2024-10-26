@@ -1,9 +1,10 @@
 const container = document.querySelector(".container");
 
 let size = 16;
-mode = "normal";
+let mode = "normal";
+let isDrawing = false;
 
-function createGrid(size, mode) {
+function createGrid(size) {
     container.innerHTML = "";
     let squareSize = 800/size + "px";
     for (let i = 0; i < size * size; i++) {
@@ -13,29 +14,42 @@ function createGrid(size, mode) {
         square.style.height = squareSize;
         square.style.opacity = 0;
         square.addEventListener("mouseenter", () => {
-            if (mode == "normal") {
-                square.style.opacity = 1;
-
+            if (isDrawing) {
+                applyColor(square);
             }
-            else if (mode == "progressive") {
-                let currentOpacity = Number(square.style.opacity);
-                if (currentOpacity < 1) {
-                    square.style.opacity = currentOpacity + 0.1;
-                }
-            }
-            else {
-                square.style.opacity = 1;
-                let red = Math.random() * 255;
-                let green = Math.random() * 255;
-                let blue = Math.random() * 255;
-                square.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
-            }
+        })
+        square.addEventListener("click", () => {
+            applyColor(square);
         })
         container.appendChild(square);
     };
 }
 
+function applyColor(square) {
+    if (mode === "normal") {
+        square.style.opacity = 1;
+    }
+    else if (mode === "progressive") {
+        let currentOpacity = Number(square.style.opacity);
+        if (currentOpacity < 1) {
+            square.style.opacity = currentOpacity + 0.1;
+        }
+    }
+    else if (mode === "random") {
+        square.style.opacity = 1;
+        let red = Math.floor(Math.random() * 256);
+        let green = Math.floor(Math.random() * 256);
+        let blue = Math.floor(Math.random() * 256);
+        square.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+    }
+}
+
 createGrid(size, "normal");
+
+
+
+document.addEventListener("mousedown", () => isDrawing = true);
+document.addEventListener("mouseup", () => isDrawing = false);
 
 const btn = document.querySelector(".dimbtn");
 btn.addEventListener("click", () => {
@@ -49,15 +63,18 @@ btn.addEventListener("click", () => {
 
 const pdbtn = document.querySelector(".pdbtn");
 pdbtn.addEventListener("click", () => {
-    createGrid(size, "progressive");
+    mode = "progressive";
+    createGrid(size);
 })
 
 const rdbtn = document.querySelector(".rdbtn");
 rdbtn.addEventListener("click", () => {
-    createGrid(size, "random");
+    mode = "random";
+    createGrid(size);
 })
 
 const norbtn = document.querySelector(".norbtn");
 norbtn.addEventListener("click", () => {
-    createGrid(size, "normal");
+    mode = "normal";
+    createGrid(size);
 })
